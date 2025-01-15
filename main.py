@@ -123,8 +123,8 @@ if total_listings > 0:
                                 description_text = description_element.text.strip()
                                 secondary_floor_match = re.search(r"(\d+)\.\skorrusel", description_text)  # Case: 'x. korrusel'
                                 floor = f"{secondary_floor_match.group(1)}.00" if secondary_floor_match else None
-                        except Exception as e:
-                            print(f"Error extracting secondary floor data: {e}")
+                        except Exception:
+                            pass
 
                     price_element = listing.find_element(By.CSS_SELECTOR, "div.price")
                     price = price_element.text.split("€")[0].replace("\xa0", " ").replace(" ", "").strip() if price_element else None
