@@ -1,6 +1,7 @@
 import pandas as pd
 import re
 import os
+import json
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
@@ -12,18 +13,34 @@ from google.cloud import bigquery
 from google.oauth2 import service_account
 import datetime
 
-project_id = "testingdaata"
+project_id = os.getenv("GOOGLE_PROJECT_ID")
 dataset_id = "kv_real_estate"
 
-service_account_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "/Users/riccardokiho/PycharmProjects/REAL_ESTATE/service_account.json")
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = service_account_path
+credentials_info = {
+    "type": "service_account",
+    "project_id": os.getenv("GOOGLE_PROJECT_ID"),
+    "private_key_id": os.getenv("GOOGLE_PRIVATE_KEY_ID"),
+    "private_key": os.getenv("GOOGLE_PRIVATE_KEY").replace("\\n", "\n"),  # Replace escaped newlines
+    "client_email": os.getenv("GOOGLE_CLIENT_EMAIL"),
+    "client_id": os.getenv("GOOGLE_CLIENT_ID"),
+    "auth_uri": os.getenv("GOOGLE_AUTH_URI"),
+    "token_uri": os.getenv("GOOGLE_TOKEN_URI"),
+    "auth_provider_x509_cert_url": os.getenv("GOOGLE_AUTH_PROVIDER_CERT_URL"),
+    "client_x509_cert_url": os.getenv("GOOGLE_CLIENT_CERT_URL"),
+}
 
-credentials = service_account.Credentials.from_service_account_file(service_account_path)
+if not all(credentials_info.values()):
+    missing_keys = [key for key, value in credentials_info.items() if not value]
+    raise ValueError(f"Missing environment variables for: {', '.join(missing_keys)}")
+
+
+credentials = service_account.Credentials.from_service_account_info(credentials_info)
 client = bigquery.Client(credentials=credentials, project=project_id)
 
 chrome_options = Options()
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
+# chrome_options.add_argument("--headless")
 
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
