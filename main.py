@@ -15,7 +15,7 @@ import datetime
 project_id = "testingdaata"
 dataset_id = "kv_real_estate"
 
-service_account_path = "service_account.json"
+service_account_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "/Users/riccardokiho/PycharmProjects/REAL_ESTATE/service_account.json")
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = service_account_path
 
 credentials = service_account.Credentials.from_service_account_file(service_account_path)
