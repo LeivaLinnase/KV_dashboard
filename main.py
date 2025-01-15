@@ -17,10 +17,10 @@ project_id = os.getenv("GOOGLE_PROJECT_ID")
 dataset_id = "kv_real_estate"
 
 credentials_info = {
-    "type": "service_account",
+    "type": os.getenv("GOOGLE_ACCOUNT_TYPE"),
     "project_id": os.getenv("GOOGLE_PROJECT_ID"),
     "private_key_id": os.getenv("GOOGLE_PRIVATE_KEY_ID"),
-    "private_key": os.getenv("GOOGLE_PRIVATE_KEY").replace("\\n", "\n"),  # Replace escaped newlines
+    "private_key": os.getenv("GOOGLE_PRIVATE_KEY"),
     "client_email": os.getenv("GOOGLE_CLIENT_EMAIL"),
     "client_id": os.getenv("GOOGLE_CLIENT_ID"),
     "auth_uri": os.getenv("GOOGLE_AUTH_URI"),
