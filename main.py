@@ -1,6 +1,7 @@
 import pandas as pd
 import re
 import os
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
@@ -12,27 +13,34 @@ from google.cloud import bigquery
 from google.oauth2 import service_account
 import datetime
 import json
-from airflow.models import Variable
 
-# Fetch GCP credentials from Airflow Variables
-gcp_credentials_json = Variable.get("GCP_CREDENTIALS")
+# Fetch GCP credentials from the environment variable
+gcp_credentials_json = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS_JSON")
+if not gcp_credentials_json:
+    raise ValueError("The GOOGLE_APPLICATION_CREDENTIALS_JSON environment variable is not set.")
+
+# Parse the JSON string into a dictionary
 credentials = service_account.Credentials.from_service_account_info(
     json.loads(gcp_credentials_json)
 )
 
+# Set up BigQuery client
 project_id = credentials.project_id
-dataset_id = "kv_real_estate"
-
+dataset_id = "kv_real_estate"  # Replace with your dataset ID
 client = bigquery.Client(credentials=credentials, project=project_id)
 
+# Set up Selenium WebDriver with Chrome options
 chrome_options = Options()
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
+# Uncomment the line below to run in headless mode
 # chrome_options.add_argument("--headless")
 
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
+# Base URL for web scraping
 base_url = "https://www.kv.ee/search?orderby=ob&deal_type=1"
+
 
 listings = []
 

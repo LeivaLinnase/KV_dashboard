@@ -1,15 +1,25 @@
 import os
+import json
 import pandas as pd
 import plotly.express as px
 from google.cloud import bigquery
 from google.oauth2 import service_account
 from dash import dcc
 
-project_id = "testingdaata"
-service_account_path = "service_account.json"
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = service_account_path
-credentials = service_account.Credentials.from_service_account_file(service_account_path)
+# Fetch GCP credentials from the environment variable
+gcp_credentials_json = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS_JSON")
+if not gcp_credentials_json:
+    raise ValueError("The GOOGLE_APPLICATION_CREDENTIALS_JSON environment variable is not set.")
+
+# Parse the JSON string into a dictionary
+credentials = service_account.Credentials.from_service_account_info(
+    json.loads(gcp_credentials_json)
+)
+
+# Set up the BigQuery client
+project_id = credentials.project_id  # Extract project ID from credentials
 client = bigquery.Client(credentials=credentials, project=project_id)
+
 
 
 def get_latest_table_name(dataset_id):

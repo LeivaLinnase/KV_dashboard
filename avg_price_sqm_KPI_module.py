@@ -1,13 +1,21 @@
 import os
+import json
 from dash import html
 from google.cloud import bigquery
 from google.oauth2 import service_account
 
-project_id = "testingdaata"
-service_account_path = "service_account.json"
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = service_account_path
-credentials = service_account.Credentials.from_service_account_file(service_account_path)
+# Fetch GCP credentials from the environment variable
+gcp_credentials_json = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS_JSON")
+if not gcp_credentials_json:
+    raise ValueError("The GOOGLE_APPLICATION_CREDENTIALS_JSON environment variable is not set.")
+
+credentials = service_account.Credentials.from_service_account_info(
+    json.loads(gcp_credentials_json)
+)
+
+project_id = credentials.project_id
 client = bigquery.Client(credentials=credentials, project=project_id)
+
 
 
 def fetch_avg_price_per_sqm(table_name, province=None):

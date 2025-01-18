@@ -1,5 +1,6 @@
 from dash import Dash, html, dcc, Input, Output
 import os
+import json
 from flask_caching import Cache
 from total_listings_KPI_module import total_listings_kpi
 from avg_price_KPI_module import average_price_kpi
@@ -7,6 +8,12 @@ from avg_price_sqm_KPI_module import average_price_per_sqm_kpi
 from heatmap_module import create_heatmap, heatmap_component
 from piechart_module import property_age_pie_chart
 from barchart_module import horizontal_bar_chart_component
+
+gcp_credentials_json = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS_JSON")
+if not gcp_credentials_json:
+    raise ValueError("The GOOGLE_APPLICATION_CREDENTIALS_JSON environment variable is not set.")
+
+os.environ["GOOGLE_APPLICATION_CREDENTIALS_JSON"] = gcp_credentials_json
 
 app = Dash(__name__)
 server = app.server
