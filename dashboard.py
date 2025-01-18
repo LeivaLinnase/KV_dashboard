@@ -1,4 +1,5 @@
 from dash import Dash, html, dcc, Input, Output
+import os
 from flask_caching import Cache
 from total_listings_KPI_module import total_listings_kpi
 from avg_price_KPI_module import average_price_kpi
@@ -127,6 +128,7 @@ def update_bar_chart(click_data):
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    port = int(os.environ.get("PORT", 8050))
+    app.run_server(host="0.0.0.0", port=port)
 
 
