@@ -1,6 +1,5 @@
 from dash import Dash, html, dcc, Input, Output
 import os
-import json
 from flask_caching import Cache
 from total_listings_KPI_module import total_listings_kpi
 from avg_price_KPI_module import average_price_kpi
