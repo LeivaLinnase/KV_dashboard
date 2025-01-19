@@ -1,6 +1,6 @@
 # KV(.ee) Real Estate Dashboard
 
-A dynamic and interactive dashboard for analyzing real estate trends, designed as a portfolio project to demonstrate proficiency in data scraping, workflow orchestration with Apache Airflow, Google Cloud integration, and advanced Python programming skills.
+A dynamic and interactive dashboard for analyzing real estate trends (condominium), designed as a portfolio project to demonstrate proficiency in data scraping, workflow orchestration with Apache Airflow, Google Cloud integration, and advanced Python programming skills.
 
 ---
 
@@ -74,4 +74,4 @@ For questions or collaboration inquiries, feel free to connect:
 
 - **Email**: riccardokiho05@gmail.com
 - **GitHub**: [@LeivaLinnase](https://github.com/LeivaLinnase)
-# KV_dashboard
+
