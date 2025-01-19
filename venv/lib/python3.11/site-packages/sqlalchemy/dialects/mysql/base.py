@@ -1,5 +1,5 @@
-# mysql/base.py
-# Copyright (C) 2005-2023 the SQLAlchemy authors and contributors
+# dialects/mysql/base.py
+# Copyright (C) 2005-2024 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -9,7 +9,7 @@ r"""
 
 .. dialect:: mysql
     :name: MySQL / MariaDB
-    :full_support: 5.6, 5.7, 8.0 / 10.4, 10.5
+    :full_support: 5.6, 5.7, 8.0 / 10.8, 10.9
     :normal_support: 5.6+ / 10+
     :best_effort: 5.0.2+ / 5.0.2+
 

@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 import pandas as pd
 import re
 import os
@@ -7,13 +8,13 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
 from google.cloud import bigquery
 from google.oauth2 import service_account
 import datetime
 import json
 
-# Fetch GCP credentials from the environment variable
+load_dotenv()
+
 gcp_credentials_json = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS_JSON")
 if not gcp_credentials_json:
     raise ValueError("The GOOGLE_APPLICATION_CREDENTIALS_JSON environment variable is not set.")
@@ -32,10 +33,9 @@ client = bigquery.Client(credentials=credentials, project=project_id)
 chrome_options = Options()
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
-# Uncomment the line below to run in headless mode
 # chrome_options.add_argument("--headless")
 
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+driver = webdriver.Chrome(service=Service("/usr/local/bin/chromedriver"), options=chrome_options)
 
 # Base URL for web scraping
 base_url = "https://www.kv.ee/search?orderby=ob&deal_type=1"

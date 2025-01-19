@@ -1,4 +1,4 @@
-#!/Users/riccardokiho/PycharmProjects/REAL_ESTATE/venv/bin/python
+#!/Users/riccardokiho/PycharmProjects/REAL_ESTATE/venv/bin/python3.11
 
 import sys
 import json

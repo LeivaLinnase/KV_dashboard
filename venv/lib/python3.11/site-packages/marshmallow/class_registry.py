@@ -7,15 +7,17 @@ class:`fields.Nested <marshmallow.fields.Nested>`.
     This module is treated as private API.
     Users should not need to use this module directly.
 """
+
 from __future__ import annotations
 
 import typing
+
 from marshmallow.exceptions import RegistryError
 
 if typing.TYPE_CHECKING:
     from marshmallow import Schema
 
-    SchemaType = typing.Type[Schema]
+    SchemaType = type[Schema]
 
 # {
 #   <class_name>: <list of class objects>
@@ -34,7 +36,8 @@ def register(classname: str, cls: SchemaType) -> None:
         class MyClass:
             pass
 
-        register('MyClass', MyClass)
+
+        register("MyClass", MyClass)
         # Registry:
         # {
         #   'MyClass': [path.to.MyClass],
@@ -66,26 +69,34 @@ def register(classname: str, cls: SchemaType) -> None:
     return None
 
 
+@typing.overload
+def get_class(classname: str, all: typing.Literal[False] = ...) -> SchemaType: ...
+
+
+@typing.overload
+def get_class(classname: str, all: typing.Literal[True] = ...) -> list[SchemaType]: ...
+
+
 def get_class(classname: str, all: bool = False) -> list[SchemaType] | SchemaType:
     """Retrieve a class from the registry.
 
-    :raises: marshmallow.exceptions.RegistryError if the class cannot be found
+    :raises: `marshmallow.exceptions.RegistryError` if the class cannot be found
         or if there are multiple entries for the given class name.
     """
     try:
         classes = _registry[classname]
     except KeyError as error:
         raise RegistryError(
-            "Class with name {!r} was not found. You may need "
-            "to import the class.".format(classname)
+            f"Class with name {classname!r} was not found. You may need "
+            "to import the class."
         ) from error
     if len(classes) > 1:
         if all:
             return _registry[classname]
         raise RegistryError(
-            "Multiple classes with name {!r} "
+            f"Multiple classes with name {classname!r} "
             "were found. Please use the full, "
-            "module-qualified path.".format(classname)
+            "module-qualified path."
         )
     else:
         return _registry[classname][0]
