@@ -1,4 +1,3 @@
-from dotenv import load_dotenv
 import pandas as pd
 import re
 import os
@@ -11,34 +10,35 @@ from selenium.webdriver.support import expected_conditions as EC
 from google.cloud import bigquery
 from google.oauth2 import service_account
 import datetime
-import json
 
-load_dotenv()
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/riccardokiho/PycharmProjects/REAL_ESTATE/service_account.json"
 
-gcp_credentials_json = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS_JSON")
-if not gcp_credentials_json:
-    raise ValueError("The GOOGLE_APPLICATION_CREDENTIALS_JSON environment variable is not set.")
+credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+if not credentials_path:
+    raise ValueError("The GOOGLE_APPLICATION_CREDENTIALS environment variable is not set.")
 
-# Parse the JSON string into a dictionary
-credentials = service_account.Credentials.from_service_account_info(
-    json.loads(gcp_credentials_json)
-)
+if not os.path.exists(credentials_path):
+    raise FileNotFoundError(f"Credentials file not found at {credentials_path}")
 
-# Set up BigQuery client
+# Lae BigQuery autentimisandmed
+credentials = service_account.Credentials.from_service_account_file(credentials_path)
+
+# Määra BigQuery kliendi konfiguratsioon
 project_id = credentials.project_id
 dataset_id = "kv_real_estate"  # Replace with your dataset ID
 client = bigquery.Client(credentials=credentials, project=project_id)
 
-# Set up Selenium WebDriver with Chrome options
+# Selenium WebDriver seadistamine
 chrome_options = Options()
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
-# chrome_options.add_argument("--headless")
+# chrome_options.add_argument("--headless")  # Vajadusel aktiveeri taustarežiim
 
 driver = webdriver.Chrome(service=Service("/usr/local/bin/chromedriver"), options=chrome_options)
 
-# Base URL for web scraping
+# Baas-URL veebikaapimise jaoks
 base_url = "https://www.kv.ee/search?orderby=ob&deal_type=1"
+
 
 
 listings = []
