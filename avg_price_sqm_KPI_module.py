@@ -4,14 +4,18 @@ from dash import html
 from google.cloud import bigquery
 from google.oauth2 import service_account
 
-# Fetch GCP credentials from the environment variable
-gcp_credentials_json = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS_JSON")
-if not gcp_credentials_json:
-    raise ValueError("The GOOGLE_APPLICATION_CREDENTIALS_JSON environment variable is not set.")
 
-credentials = service_account.Credentials.from_service_account_info(
-    json.loads(gcp_credentials_json)
-)
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/riccardokiho/PycharmProjects/REAL_ESTATE/service_account.json"
+
+credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+if not credentials_path:
+    raise ValueError("The GOOGLE_APPLICATION_CREDENTIALS environment variable is not set.")
+
+if not os.path.exists(credentials_path):
+    raise FileNotFoundError(f"Credentials file not found at {credentials_path}")
+
+credentials = service_account.Credentials.from_service_account_file(credentials_path)
+
 
 project_id = credentials.project_id
 client = bigquery.Client(credentials=credentials, project=project_id)

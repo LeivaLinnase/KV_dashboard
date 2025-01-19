@@ -20,10 +20,8 @@ if not credentials_path:
 if not os.path.exists(credentials_path):
     raise FileNotFoundError(f"Credentials file not found at {credentials_path}")
 
-# Lae BigQuery autentimisandmed
 credentials = service_account.Credentials.from_service_account_file(credentials_path)
 
-# Määra BigQuery kliendi konfiguratsioon
 project_id = credentials.project_id
 dataset_id = "kv_real_estate"  # Replace with your dataset ID
 client = bigquery.Client(credentials=credentials, project=project_id)

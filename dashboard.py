@@ -7,12 +7,18 @@ from avg_price_sqm_KPI_module import average_price_per_sqm_kpi
 from heatmap_module import create_heatmap, heatmap_component
 from piechart_module import property_age_pie_chart
 from barchart_module import horizontal_bar_chart_component
+from google.oauth2 import service_account
 
-gcp_credentials_json = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS_JSON")
-if not gcp_credentials_json:
-    raise ValueError("The GOOGLE_APPLICATION_CREDENTIALS_JSON environment variable is not set.")
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/riccardokiho/PycharmProjects/REAL_ESTATE/service_account.json"
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS_JSON"] = gcp_credentials_json
+credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+if not credentials_path:
+    raise ValueError("The GOOGLE_APPLICATION_CREDENTIALS environment variable is not set.")
+
+if not os.path.exists(credentials_path):
+    raise FileNotFoundError(f"Credentials file not found at {credentials_path}")
+
+credentials = service_account.Credentials.from_service_account_file(credentials_path)
 
 app = Dash(__name__)
 server = app.server
