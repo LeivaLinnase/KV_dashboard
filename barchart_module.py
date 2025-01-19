@@ -1,29 +1,25 @@
 import os
 import json
+from dotenv import load_dotenv
 import pandas as pd
 import plotly.express as px
 from google.cloud import bigquery
 from google.oauth2 import service_account
 from dash import dcc
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/riccardokiho/PycharmProjects/REAL_ESTATE/service_account.json"
+load_dotenv()
+credentials_json = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
+if not credentials_json:
+    raise ValueError("The GOOGLE_APPLICATION_CREDENTIALS_JSON environment variable is not set.")
 
-credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-if not credentials_path:
-    raise ValueError("The GOOGLE_APPLICATION_CREDENTIALS environment variable is not set.")
+credentials = service_account.Credentials.from_service_account_info(
+    json.loads(credentials_json)
+)
 
-if not os.path.exists(credentials_path):
-    raise FileNotFoundError(f"Credentials file not found at {credentials_path}")
-
-credentials = service_account.Credentials.from_service_account_file(credentials_path)
-
-# Set up the BigQuery client
-project_id = credentials.project_id  # Extract project ID from credentials
+project_id = credentials.project_id
 client = bigquery.Client(credentials=credentials, project=project_id)
 
 
-
-# Function to get the latest table name from BigQuery
 def get_latest_table_name(dataset_id):
     dataset_ref = client.dataset(dataset_id)
     tables = list(client.list_tables(dataset_ref))
@@ -34,7 +30,6 @@ def get_latest_table_name(dataset_id):
     return weeks[-1][1] if weeks else None
 
 
-# Fetch Data Function
 def fetch_data(province=None):
     latest_table_name = get_latest_table_name("kv_real_estate")
     full_table_name = f"{project_id}.kv_real_estate.{latest_table_name}"
@@ -87,10 +82,8 @@ def fetch_data(province=None):
 
 def create_horizontal_bar_chart(data, province=None):
     title = f"Avg. Sqm Price by Floor<br> {province}" if province else "Avg. Sqm Price by Floor"
-
-    # Dynamically adjust bar height based on the number of bars
     num_bars = len(data)
-    chart_height = max(450, num_bars * 20)  # Ensure minimum chart height for fewer bars
+    chart_height = max(450, num_bars * 20)
 
     fig = px.bar(
         data,
@@ -102,7 +95,7 @@ def create_horizontal_bar_chart(data, province=None):
             "avg_price_per_sqm": "Avg Price per SqM (€)"
         },
         title=title,
-        height=chart_height,  # Dynamically adjust chart height
+        height=chart_height,
         width=350
     )
     fig.update_traces(
@@ -111,7 +104,7 @@ def create_horizontal_bar_chart(data, province=None):
         insidetextanchor="end",
         textfont=dict(color="white", size=16),
         marker_color="#433878",
-        width=0.8,  # Keep the bar width constant
+        width=0.8,
         hovertemplate=(
             "Average sqm price on floor %{y}:<br>"
             "<b>%{x} €</b><br>"
@@ -131,7 +124,7 @@ def create_horizontal_bar_chart(data, province=None):
         paper_bgcolor="#FFE1FF",
         plot_bgcolor="#FFE1FF",
         font=dict(family="Orbitron"),
-        margin=dict(l=20, r=20, t=50, b=10),  # Adjust margins for title and bars
+        margin=dict(l=20, r=20, t=50, b=10),
         xaxis=dict(
             showticklabels=False, showgrid=False, zeroline=False, title=None,
             fixedrange=True

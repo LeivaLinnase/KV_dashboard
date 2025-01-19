@@ -1,26 +1,23 @@
 import os
 import json
+from dotenv import load_dotenv
 import pandas as pd
 from dash import dcc
 import plotly.graph_objects as go
 from google.cloud import bigquery
 from google.oauth2 import service_account
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/riccardokiho/PycharmProjects/REAL_ESTATE/service_account.json"
+load_dotenv()
+credentials_json = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
+if not credentials_json:
+    raise ValueError("The GOOGLE_APPLICATION_CREDENTIALS_JSON environment variable is not set.")
 
-credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-if not credentials_path:
-    raise ValueError("The GOOGLE_APPLICATION_CREDENTIALS environment variable is not set.")
+credentials = service_account.Credentials.from_service_account_info(
+    json.loads(credentials_json)
+)
 
-if not os.path.exists(credentials_path):
-    raise FileNotFoundError(f"Credentials file not found at {credentials_path}")
-
-credentials = service_account.Credentials.from_service_account_file(credentials_path)
-
-# Set up the BigQuery client
-project_id = credentials.project_id  # Extract project ID from credentials
+project_id = credentials.project_id
 client = bigquery.Client(credentials=credentials, project=project_id)
-
 
 
 def get_latest_table_name(dataset_id):

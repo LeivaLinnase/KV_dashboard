@@ -1,25 +1,21 @@
 import os
 import json
+from dotenv import load_dotenv
 from dash import html
 from google.cloud import bigquery
 from google.oauth2 import service_account
 
+load_dotenv()
+credentials_json = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
+if not credentials_json:
+    raise ValueError("The GOOGLE_APPLICATION_CREDENTIALS_JSON environment variable is not set.")
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/riccardokiho/PycharmProjects/REAL_ESTATE/service_account.json"
-
-credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-if not credentials_path:
-    raise ValueError("The GOOGLE_APPLICATION_CREDENTIALS environment variable is not set.")
-
-if not os.path.exists(credentials_path):
-    raise FileNotFoundError(f"Credentials file not found at {credentials_path}")
-
-credentials = service_account.Credentials.from_service_account_file(credentials_path)
-
+credentials = service_account.Credentials.from_service_account_info(
+    json.loads(credentials_json)
+)
 
 project_id = credentials.project_id
 client = bigquery.Client(credentials=credentials, project=project_id)
-
 
 
 def fetch_avg_price_per_sqm(table_name, province=None):
